@@ -21,11 +21,11 @@ class Train(models.Model):
 
     def clean(self, *args, **kwargs):
         if self.from_city == self.to_city:
-            raise ValidationError('Измините город прибытия')
+            raise ValidationError('Измените город прибытия')
         qs = Train.objects.filter(from_city=self.from_city,
                                     to_city=self.to_city,
                                     travel_time=self.travel_time).exclude(pk=self.pk)
         if qs.exists():
-            raise ValidationError('Измините время прибытия')
+            raise ValidationError('Измените время прибытия')
 
         return super(Train, self).clean(*args, **kwargs)
