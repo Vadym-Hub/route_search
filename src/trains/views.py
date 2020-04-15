@@ -18,6 +18,7 @@ def home(request):
 
 
 class TrainCreateView(SuccessMessageMixin, CreateView):
+    """Создание поезда"""
     model = Train
     form_class = TrainForm
     template_name = 'trains/create.html'
@@ -32,6 +33,7 @@ class TrainDetailView(DetailView):
 
 
 class TrainUpdateView(SuccessMessageMixin, UpdateView):
+    """Редактирование поезда"""
     model = Train
     form_class = TrainForm
     template_name = 'trains/update.html'
@@ -40,6 +42,7 @@ class TrainUpdateView(SuccessMessageMixin, UpdateView):
 
 
 class TrainDeleteView(DeleteView):
+    """Удаление поезда"""
     model = Train
     success_url = reverse_lazy('train:home')
 
