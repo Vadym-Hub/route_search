@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Сохранение маршрута {% endblock %}
+{% block title %}Збереження маршруту{% endblock %}
 
 {% block content %}
-    <h1 class="display-4">Сохранить новый маршрут </h1>
+    <h1 class="display-4">Зберегти новий маршрут</h1>
     <div class="row mx-auto">
         <div class="col-md-8">
             <form action="" method="post">{% csrf_token %}
                 {{ form.as_p }}
-                <p>Маршрут из {{ from_city }} в {{ to_city }}, продолжительностью {{ travel_times }}</p>
+                <p>Маршрут із {{ from_city }} в {{ to_city }}, тривалістю {{ travel_times }}</p>
                 <p>Маршрут состоит из: </p>
                     {% for d in descr %}
                         <p>{{ d }}</p>
                     {% endfor %}
-                <input type="submit" value="Сохранить">
+                <input type="submit" value="Зберегти">
             </form>
         </div>
     </div>

@@ -1,21 +1,21 @@
-from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
-from django.views.generic.edit import DeleteView
-from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.views.generic import DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+
+from routes.forms import RouteForm, RouteModelForm
+from routes.models import Route
 from trains.models import Train
-from .forms import *
+import time as tm
 
 
 def dfs_paths(graph, start, goal):
     """
-    Функция поиска всех возможных мвршрутов
-    из одного города в другой. Вариант посещения
-    одного и того же города более одного раза,
-    не рассматриваэтся.
+    Функція поиска всіх можливих маршрутів
+    із одного міста в інший. Варіант відвідування
+    одного и того же міста більше одного раза,
+    не розглядається.
     """
     stack = [(start, [start])]
     while stack:
@@ -28,105 +28,117 @@ def dfs_paths(graph, start, goal):
                     stack.append((next_, path + [next_]))
 
 
-def get_graph():
+def get_graph(_qs):
     """
-    Функция по созданию графа из БД по росписанию
-    движения поездов для работы функции dfs_paths. 
+    Функция по творенню графа из БД по розкладу
+    руху поїздів для работи функції dfs_paths 
     """
-    qs = Train.objects.values('from_city')
-    from_city_set = set(i['from_city'] for i in qs)
+    qs = _qs.values()
     graph = {}
-    for city in from_city_set:
-        trains = Train.objects.filter(from_city=city).values('to_city')
-        tmp = set(i['to_city'] for i in trains)
-        graph[city] = tmp
+    for q in qs:
+        graph.setdefault(q['from_city_id'], set())
+        graph[q['from_city_id']].add(q['to_city_id'])
     return graph
 
 
-# @login_required(login_url='/login/')  # посилання для незарегестрірованих юзерів
 def home(request):
-    """функція головної сторінки"""
+    """Функція головної сторінки"""
     form = RouteForm()
     return render(request, 'routes/home.html', {'form': form})
 
 
 def find_routes(request):
-    """Поиск маршрута"""
+    """Пошук маршруту"""
     if request.method == "POST":
+        start = tm.time()
         form = RouteForm(request.POST or None)
         if form.is_valid():
+            qs = Train.objects.all().order_by('travel_time')
             data = form.cleaned_data
-            # assert False
             from_city = data['from_city']
             to_city = data['to_city']
-            across_cities_form = data['across_cities']
-            traveling_time = data['traveling_time']
-            graph = get_graph()
+            cities = data['cities']
+            travelling_time = data['travelling_time']
+            graph = get_graph(_qs=qs)
             all_ways = list(dfs_paths(graph, from_city.id, to_city.id))
             if len(all_ways) == 0:
-                messages.error(request, 'Маршрута, удовлетворяющего условиям не существует.')
+                # нема жодного маршруто для заданого пошуку
+                messages.error(request,
+                               'Маршруту, задовільняющого умови не існує.')
                 return render(request, 'routes/home.html', {'form': form})
-            elif across_cities_form:
-                across_cities = [city.id for city in across_cities_form]
+            if cities:
+                # якщо є міста через які потрібно проїхати
+                across_cities = [city.id for city in cities]
                 right_ways = []
                 for way in all_ways:
+                    # тоді відбираєм ті маршрути, які проходять через них
                     if all(point in way for point in across_cities):
                         right_ways.append(way)
                 if not right_ways:
-                    messages.error(request, 'Маршрут, через ети города невозможен.')
+                    # коли список маршрутів пустий
+                    messages.error(request, 'Маршрут через ці міста неможливий')
                     return render(request, 'routes/home.html', {'form': form})
             else:
                 right_ways = all_ways
-
             trains = []
+            all_trains = {}
+            for q in qs:
+                all_trains.setdefault((q.from_city_id, q.to_city_id), [])
+                all_trains[(q.from_city_id, q.to_city_id)].append(q)
             for route in right_ways:
+                # для міст по дорозі маршруту, вибираем необхідні потяги
                 tmp = {}
                 tmp['trains'] = []
                 total_time = 0
-                for index in range(len(route)-1):
-                    qs = Train.objects.filter(from_city=route[index], to_city=route[index+1])
-                    qs = qs.order_by('travel_time').first()
+                for index in range(len(route) - 1):
+                    qs = all_trains[(route[index], route[index + 1])]
+                    qs = qs[0]
                     total_time += qs.travel_time
                     tmp['trains'].append(qs)
                 tmp['total_time'] = total_time
-                if total_time <= traveling_time:
+                if total_time <= travelling_time:
+                    # якщо загальний час в дорозі менше заданого,
+                    # то добавляем маршрут в загальний список
                     trains.append(tmp)
             if not trains:
-                messages.error(request, 'Время в пути, больше заданного.')
+                # якщо список пустий, то нема ніяких маршрутів,
+                # які б задовільнили задані умови
+                messages.error(request, 'Час в дорозі, більше заданного.')
                 return render(request, 'routes/home.html', {'form': form})
             routes = []
             cities = {'from_city': from_city.name, 'to_city': to_city.name}
             for tr in trains:
+                # формуюю список всіх маршрутов
                 routes.append({'route': tr['trains'],
-                                'total_time': tr['total_time'],
-                                'from_city': from_city.name,
-                                'to_city': to_city.name})
+                               'total_time': tr['total_time'],
+                               'from_city': from_city.name,
+                               'to_city': to_city.name})
             sorted_routes = []
             if len(routes) == 1:
                 sorted_routes = routes
             else:
+                # якщо маршрутів більше одного, то сортую їх по часу
                 times = list(set(x['total_time'] for x in routes))
-                time = sorted(times)
+                times = sorted(times)
                 for time in times:
                     for route in routes:
                         if time == route['total_time']:
                             sorted_routes.append(route)
-
             context = {}
             form = RouteForm()
             context['form'] = form
             context['routes'] = sorted_routes
             context['cities'] = cities
+            context['time'] = tm.time() - start
             return render(request, 'routes/home.html', context)
-        return render(request, 'routes/home.html', {'form': form})
     else:
-        messages.error(request, 'Создайте маршрут')
+        messages.error(request, 'Створіть маршрут')
         form = RouteForm()
         return render(request, 'routes/home.html', {'form': form})
 
 
 def add_route(request):
-    """Сохранение маршрута"""
+    """Збереження маршруту"""
     if request.method == 'POST':
         form = RouteModelForm(request.POST or None)
         if form.is_valid():
@@ -135,42 +147,45 @@ def add_route(request):
             travel_times = data['travel_times']
             from_city = data['from_city']
             to_city = data['to_city']
-            across_cities = data['across_cities'].split(' ')
-            trains = [int(x) for x in across_cities if x.isalnum()]
-            qs = Train.objects.filter(id__in=trains)
+            trains = data['trains'].split(' ')
+            trains_lst = [int(x) for x in trains if x.isdigit()]
+            qs = Train.objects.filter(id__in=trains_lst)
             route = Route(name=name, from_city=from_city,
                           to_city=to_city, travel_times=travel_times)
-            route.save()
-            for tr in qs:
-                route.across_cities.add(tr.id)
-            messages.success(request, 'Маршрут был успешно сохранен.')
+            route.save()  # збереження нового маршруту
+            for tr in qs:  # збереження в маршрут, потягів из списка
+                route.trains.add(tr.id)
+            messages.success(request, 'Маршрут було вдало збережено.')
             return redirect('/')
+        messages.error(request, 'Неправильно заповнена форма')
+        return redirect('/')
     else:
         data = request.GET
         if data:
             travel_times = data['travel_times']
             from_city = data['from_city']
             to_city = data['to_city']
-            across_cities = data['across_cities'].split(' ')
-            trains = [int(x) for x in across_cities if x.isalnum()]
-            qs = Train.objects.filter(id__in=trains)
-            train_list = ' '.join(str(i) for i in trains)
-            form = RouteModelForm(initial={'from_city': from_city,
-                                           'to_city': to_city,
-                                           'travel_times': travel_times,
-                                           'across_cities': train_list})
+            trains = data['trains'].split(' ')
+            trains_lst = [int(x) for x in trains if x.isdigit()]
+            qs = Train.objects.filter(id__in=trains_lst)
+            train_list = ' '.join(str(i) for i in trains_lst)
+            form = RouteModelForm(
+                initial={'from_city': from_city, 'to_city': to_city,
+                         'travel_times': travel_times, 'trains': train_list})
+            context = {}
             route_desc = []
             for tr in qs:
-                dsc = f'Поезд №{tr.name} cледующий из {tr.from_city} в {tr.to_city}. Время в пути {tr.travel_time}'
+                dsc = '''Потяг №{} направляющийся з {} в {}.
+            Час в дорозі {}.'''.format(tr.name, tr.from_city, tr.to_city,
+                                       tr.travel_time)
                 route_desc.append(dsc)
-            context = {'form': form,
-                       'descr': route_desc,
+            context = {'form': form, 'descr': route_desc,
                        'from_city': from_city,
-                       'to_city': to_city,
-                       'travel_times': travel_times}
+                       'to_city': to_city, 'travel_times': travel_times}
             return render(request, 'routes/create.html', context)
         else:
-            messages.error(request, 'Невозможно сохранить несуществующий маршрут')
+             # захист від звернень по адресі баз данних
+            messages.error(request, 'Неможливо зберегти неіснуючий маршрут')
             return redirect('/')
 
 
@@ -187,10 +202,9 @@ class RouteListView(ListView):
 
 
 class RouteDeleteView(LoginRequiredMixin, DeleteView):
-    """Видалення маршруту"""
     model = Route
     success_url = reverse_lazy('home')
-    login_url = '/login/'
+    login_url = 'accounts/login/'
 
     def get(self, request, *args, **kwargs):
         messages.success(request, 'Маршрут видалено!')

@@ -1,16 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Удаление поезда {% endblock %}
+{% block title %}Видалення потяга{% endblock %}
 
 {% block content %}
-    <h1 class="display-4">Удалить поезд </h1>
+    <h1 class="display-4">Видалити потяг </h1>
     <div class="row mx-auto">
         <div class="col-md-4">
             <form method="post">{% csrf_token %}
-                <p>Вы уверенны, что хотите удалить "{{ object }}"?</p>
-                <input type="submit" value="Да, удалить">
+                <p>Ви впевнені, що хочете видалити"{{ object }}"?</p>
+                <input type="submit" value="Так, видалити">
             </form>
         </div>
     </div>
-
-
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{% url 'trains:home' %}">
+                <button type="button" class="btn btn-light">Назад до списку</button>
+            </a>
+        </div>
+    </div>
 {% endblock %}

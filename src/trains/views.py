@@ -20,11 +20,11 @@ def home(request):
 
 class TrainCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     """Створення потягу"""
-    login_url = '/login/'
+    login_url = '/accounts/login/'
     model = Train
     form_class = TrainForm
     template_name = 'trains/create.html'
-    success_url = reverse_lazy('train:home')
+    success_url = reverse_lazy('trains:home')
     success_message = 'Потяг створено!'
 
 
@@ -36,19 +36,19 @@ class TrainDetailView(DetailView):
 
 class TrainUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     """Редагування потягу"""
-    login_url = '/login/'
+    login_url = '/accounts/login/'
     model = Train
     form_class = TrainForm
     template_name = 'trains/update.html'
-    success_url = reverse_lazy('train:home')
+    success_url = reverse_lazy('trains:home')
     success_message = 'Потяг відредаговано!'
 
 
 class TrainDeleteView(LoginRequiredMixin, DeleteView):
     """Видалення потягу"""
-    login_url = '/login/'
+    login_url = '/accounts/login/'
     model = Train
-    success_url = reverse_lazy('train:home')
+    success_url = reverse_lazy('trains:home')
 
     def get(self, request, *args, **kwargs):
         messages.success(request, 'Потяг видалено!')

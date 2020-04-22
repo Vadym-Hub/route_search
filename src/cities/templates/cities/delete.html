@@ -1,16 +1,22 @@
-{% extends "base.html" %}
-{% block title %}Удаление города {% endblock %}
+{% extends 'base.html' %}
+{% block title %}Видалення міста{% endblock %}
 
 {% block content %}
-    <h1 class="display-4">Удалить город </h1>
-    <div class="row mx-auto">
-        <div class="col-md-4">
+    <h1 class="display-4">Видалити місто</h1>
+    <div class="row">
+        <div class="col-md-4 mx-auto">
             <form method="post">{% csrf_token %}
-                <p>Вы уверенны, что хотите удалить "{{ object }}"?</p>
-                <input type="submit" value="Да, удалить">
+                {{form.as_p}}
+                <p>Ви впевнені, що хочете видалити "{{ object }}"?</p>
+                <input type="submit" value="Так, видалити">
             </form>
         </div>
     </div>
-
-
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{% url 'cities:home' %}">
+                <button type="button" class="btn btn-light">Назад до списку</button>
+            </a>
+        </div>
+    </div>
 {% endblock %}

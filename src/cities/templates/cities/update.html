@@ -1,16 +1,22 @@
-{% extends "base.html" %}
-{% block title %}Редактирование города {% endblock %}
+{% extends 'base.html' %}
+{% block title %}Редагування міста{% endblock %}
 
 {% block content %}
-    <h1 class="display-4">Редактировать город </h1>
-    <div class="row mx-auto">
-        <div class="col-md-4">
+    <h1 class="display-4">Редагувати місто</h1>
+    <div class="row">
+        <div class="col-md-4 mx-auto">
             <form action="" method="post">{% csrf_token %}
                 {{form.as_p}}
-                <input type="submit" value="Сохранить">
+                <input type="submit" value="Зберегти">
             </form>
         </div>
     </div>
-
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{% url 'cities:home' %}">
+                <button type="button" class="btn btn-light">Назад до списку</button>
+            </a>
+        </div>
+    </div>
 
 {% endblock %}

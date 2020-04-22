@@ -1,16 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Создание поезда {% endblock %}
+{% block title %}Створення потягу {% endblock %}
 
 {% block content %}
-    <h1 class="display-4">Создать новый поезд </h1>
+    <h1 class="display-4">Створити новий потяг </h1>
     <div class="row mx-auto">
         <div class="col-md-4">
             <form action="" method="post">{% csrf_token %}
                 {{form.as_p}}
-                <input type="submit" value="Сохранить">
+                <input type="submit" value="Зберегти">
             </form>
         </div>
     </div>
-
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{% url 'trains:home' %}">
+                <button type="button" class="btn btn-light">Назад до списку</button>
+            </a>
+        </div>
+    </div>
 
 {% endblock %}
