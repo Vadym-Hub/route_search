@@ -3,9 +3,10 @@
 
 {% block content %}
     <h1 class="display-4">Видалити потяг </h1>
-    <div class="row mx-auto">
-        <div class="col-md-4">
+    <div class="row">
+        <div class="col-md-4 mx-auto">
             <form method="post">{% csrf_token %}
+                {{form.as_p}}
                 <p>Ви впевнені, що хочете видалити"{{ object }}"?</p>
                 <input type="submit" value="Так, видалити">
             </form>

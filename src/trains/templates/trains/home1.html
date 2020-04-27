@@ -18,27 +18,14 @@
         </tr>
     </thead>
     <tbody>
-        {% for object in objects_list %}
-        <tr>
+        {% for object in objects_list%}
+       <tr>
             <td>{{object.name}}</td>
             <td>{{object.from_city}}</td>
             <td>{{object.to_city}}</td>
             <td>{{object.travel_time}}</td>
             <td></td>
             <td></td>
-            <td> {% if user.is_authenticated %}
-                <a href='{% url "trains:update" pk=object.pk%}'>
-                    <button type="button" class="btn btn-primary btn-sm">Редагувати</button>
-                </a>
-                {% endif %}
-
-            </td>
-            <td> {% if user.is_authenticated %}
-                <a href='{% url "trains:delete" pk=object.pk%}'>
-                    <button type="button" class="btn btn-danger btn-sm">Видалити</button>
-                </a>
-                {% endif %}
-            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -94,10 +81,9 @@
 <div class="row">
     <div class='col-md-6 ml-auto'>
         <a href='{% url "trains:add" %}'>
-        {% if user.is_authenticated %}
-            <button type="button" class="btn btn-info btn-sm"> Добавити новий потяг </button>
+        <button type="button" class="btn btn-info btn-sm"> Добавити новий потяг </button>
         </a>
-        {% endif %}
     </div>
 </div>
+
 {% endblock content %}

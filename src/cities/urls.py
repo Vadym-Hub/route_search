@@ -2,6 +2,7 @@ from django.urls import path
 from .views import home, CityDetailView, CityCreateView
 from .views import CityUpdateView, CityDeleteView
 
+
 urlpatterns = [
     path('detail/<int:pk>/', CityDetailView.as_view(), name='detail'),
     path('update/<int:pk>/', CityUpdateView.as_view(), name='update'),
