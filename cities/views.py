@@ -1,5 +1,4 @@
 from django.views.generic import ListView
-from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
@@ -15,13 +14,6 @@ class CityListView(ListView):
     context_object_name = 'objects_list'
     template_name = 'cities/list.html'
     paginate_by = 5
-
-
-class CityDetailView(DetailView):
-    """Деталізація конкретного екземпляру"""
-    queryset = City.objects.all()
-    context_object_name = 'object'
-    template_name = 'cities/detail.html'
 
 
 class CityCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):

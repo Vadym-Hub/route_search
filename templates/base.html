@@ -1,7 +1,8 @@
 <!doctype html>
-{% url 'cities:home' as cities_home_url %}
 {% url 'home' as home_url %}
-{% url 'trains:home' as train_home_url %}
+{% url 'cities:list' as cities_list_url %}
+{% url 'trains:list' as train_list_url %}
+{% url 'list' as list_url %}
 {% url 'trains:add' as train_add_url %}
 {% url 'cities:add' as city_add_url %}
 
@@ -26,16 +27,16 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item {% if request.path == cities_home_url %}active{% endif %}">
+        <li class="nav-item {% if request.path == home_url %}active{% endif %}">
           <a class="nav-link" href="{% url 'home' %} ">Пошук маршруту</a>
         </li>
-        <li class="nav-item {% if request.path == cities_home_url %}active{% endif %}">
+        <li class="nav-item {% if request.path == cities_list_url %}active{% endif %}">
           <a class="nav-link" href="{% url 'cities:list' %} ">Міста</a>
         </li>
-        <li class="nav-item {% if request.path == train_home_url %} active {% endif %}">
+        <li class="nav-item {% if request.path == train_list_url %} active {% endif %}">
           <a class="nav-link" href="{% url 'trains:list'%}">Потяги</a>
         </li>
-        <li class="nav-item {% if request.path == cities_home_url %}active{% endif %}">
+        <li class="nav-item {% if request.path == list_url %}active{% endif %}">
           <a class="nav-link" href="{% url 'list' %} ">Маршрути</a>
         </li>
          {% if user.is_authenticated %}

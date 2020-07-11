@@ -1,6 +1,5 @@
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -24,12 +23,6 @@ class TrainCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     template_name = 'trains/create.html'
     success_url = reverse_lazy('trains:list')
     success_message = 'Потяг створено!'
-
-
-class TrainDetailView(DetailView):
-    queryset = Train.objects.all()
-    context_object_name = 'object'
-    template_name = 'trains/detail.html'
 
 
 class TrainUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):

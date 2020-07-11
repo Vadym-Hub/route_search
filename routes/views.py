@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import DetailView, ListView, DeleteView
@@ -199,20 +200,20 @@ class RouteListView(ListView):
     queryset = Route.objects.all()
     context_object_name = 'objects_list'
     template_name = 'routes/list.html'
+    paginate_by = 5
 
 
 class RouteDetailView(DetailView):
+    """Деталі маршруту"""
     queryset = Route.objects.all()
     context_object_name = 'object'
     template_name = 'routes/detail.html'
 
 
-class RouteDeleteView(LoginRequiredMixin, DeleteView):
+class RouteDeleteView(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
     """Видалення маршруту"""
     model = Route
-    success_url = reverse_lazy('home')
-    login_url = 'accounts/login/'
-
-    def get(self, request, *args, **kwargs):
-        messages.success(request, 'Маршрут видалено!')
-        return self.post(request, *args, **kwargs)
+    template_name = 'routes/delete.html'
+    success_url = reverse_lazy('list')
+    success_message = 'Маршрут видалено!'
+    login_url = '/accounts/login/'
