@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.generic import DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -12,9 +13,9 @@ import time as tm
 
 def dfs_paths(graph, start, goal):
     """
-    Функція поиска всіх можливих маршрутів
+    Функція пошуку всіх можливих маршрутів
     із одного міста в інший. Варіант відвідування
-    одного и того же міста більше одного раза,
+    одного и того ж міста більше одного разу,
     не розглядається.
     """
     stack = [(start, [start])]
@@ -31,7 +32,7 @@ def dfs_paths(graph, start, goal):
 def get_graph(_qs):
     """
     Функция по творенню графа из БД по розкладу
-    руху поїздів для работи функції dfs_paths 
+    руху поїздів для роботи функції dfs_paths
     """
     qs = _qs.values()
     graph = {}
@@ -39,12 +40,6 @@ def get_graph(_qs):
         graph.setdefault(q['from_city_id'], set())
         graph[q['from_city_id']].add(q['to_city_id'])
     return graph
-
-
-def home(request):
-    """Функція головної сторінки"""
-    form = RouteForm()
-    return render(request, 'routes/home.html', {'form': form})
 
 
 def find_routes(request):
@@ -62,9 +57,8 @@ def find_routes(request):
             graph = get_graph(_qs=qs)
             all_ways = list(dfs_paths(graph, from_city.id, to_city.id))
             if len(all_ways) == 0:
-                # нема жодного маршруто для заданого пошуку
-                messages.error(request,
-                               'Маршруту, задовільняющого умови не існує.')
+                # нема жодного маршруту для заданого пошуку
+                messages.error(request, 'Маршруту, задовільняющого умови не існує.')
                 return render(request, 'routes/home.html', {'form': form})
             if cities:
                 # якщо є міста через які потрібно проїхати
@@ -184,9 +178,27 @@ def add_route(request):
                        'to_city': to_city, 'travel_times': travel_times}
             return render(request, 'routes/create.html', context)
         else:
-             # захист від звернень по адресі баз данних
+            # захист від звернень по адресі баз данних
             messages.error(request, 'Неможливо зберегти неіснуючий маршрут')
             return redirect('/')
+
+
+class HomeView(View):
+    """Головна сторінка"""
+    form_class = RouteForm
+    initial = {'key': 'value'}
+    template_name = 'routes/home.html'
+
+    def get(self, request):
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template_name, {'form': form})
+
+
+class RouteListView(ListView):
+    """Список маршрутів"""
+    queryset = Route.objects.all()
+    context_object_name = 'objects_list'
+    template_name = 'routes/list.html'
 
 
 class RouteDetailView(DetailView):
@@ -195,13 +207,8 @@ class RouteDetailView(DetailView):
     template_name = 'routes/detail.html'
 
 
-class RouteListView(ListView):
-    queryset = Route.objects.all()
-    context_object_name = 'objects_list'
-    template_name = 'routes/list.html'
-
-
 class RouteDeleteView(LoginRequiredMixin, DeleteView):
+    """Видалення маршруту"""
     model = Route
     success_url = reverse_lazy('home')
     login_url = 'accounts/login/'

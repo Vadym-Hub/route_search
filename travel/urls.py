@@ -16,17 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from routes.views import home, find_routes, add_route, RouteListView, \
-    RouteDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('cities/', include(('cities.urls', 'cities'))),
-    path('trains/', include(('trains.urls', 'trains'))),
-    path('accounts/', include(('accounts.urls', 'accounts'))),
-    path('find/', find_routes, name='find_routes'),
-    path('add_route/', add_route, name='add_route'),
-    path('list/', RouteListView.as_view(), name='list'),
-    path('detail/<int:pk>/', RouteDetailView.as_view(), name='detail'),
-    path('', home, name='home'),
+    path('', include('routes.urls')),
+    path('cities/', include('cities.urls')),
+    path('trains/', include('trains.urls')),
+    path('accounts/', include('accounts.urls')),
 ]

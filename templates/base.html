@@ -30,10 +30,10 @@
           <a class="nav-link" href="{% url 'home' %} ">Пошук маршруту</a>
         </li>
         <li class="nav-item {% if request.path == cities_home_url %}active{% endif %}">
-          <a class="nav-link" href="{% url 'cities:home' %} ">Міста</a>
+          <a class="nav-link" href="{% url 'cities:list' %} ">Міста</a>
         </li>
         <li class="nav-item {% if request.path == train_home_url %} active {% endif %}">
-          <a class="nav-link" href="{% url 'trains:home'%}">Потяги</a>
+          <a class="nav-link" href="{% url 'trains:list'%}">Потяги</a>
         </li>
         <li class="nav-item {% if request.path == cities_home_url %}active{% endif %}">
           <a class="nav-link" href="{% url 'list' %} ">Маршрути</a>

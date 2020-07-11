@@ -4,20 +4,21 @@ from cities.models import City
 
 
 class TrainForm(forms.ModelForm):
+    """Форма потягу"""
     name = forms.CharField(label='Потяг', widget=forms.TextInput(
-                                attrs={'class': 'form-control',
-                                       'placeholder': 'Введіть номер потягу'}))
-    from_city = forms.ModelChoiceField(label='Откуда', queryset=City.objects.all(),
-                            widget=forms.Select(attrs={'class': 'form-control',
-                                                       'placeholder': 'Звідки'}))
+                                              attrs={'class': 'form-control',
+                                                     'placeholder': 'Введіть номер потягу'}))
+    from_city = forms.ModelChoiceField(label='Звідки', queryset=City.objects.all(),
+                                       widget=forms.Select(attrs={'class': 'form-control',
+                                                                  'placeholder': 'Звідки'}))
 
     to_city = forms.ModelChoiceField(label='Куди', queryset=City.objects.all(),
-                            widget=forms.Select(attrs={'class': 'form-control',
-                                                       'placeholder': 'Куди'}))
+                                     widget=forms.Select(attrs={'class': 'form-control',
+                                                                'placeholder': 'Куди'}))
 
     travel_time = forms.IntegerField(label='Час', widget=forms.NumberInput(
-                                attrs={'class': 'form-control',
-                                       'placeholder': 'Час в дорозі'}))
+        attrs={'class': 'form-control',
+               'placeholder': 'Час в дорозі'}))
 
     class Meta(object):
         model = Train

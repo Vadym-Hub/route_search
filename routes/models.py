@@ -3,6 +3,7 @@ from trains.models import Train
 
 
 class Route(models.Model):
+    """Маршрут"""
     name = models.CharField(max_length=100,
                             verbose_name='Назва маршруту', unique=True)
     from_city = models.CharField(max_length=100,

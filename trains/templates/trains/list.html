@@ -1,27 +1,40 @@
 {% extends 'base.html' %}
 
-{% block title %} Міста {% endblock title %}
+{% block title %} Потяги {% endblock title %}
 
 {% block content %}
-<h1 class="display-4 text-center my-4">Міста</h1>
+<h1 class="display-4 text-center my-4">Потяги</h1>
 <div class="row ">
 <div class='col-md-6 mx-auto'>
 <table class="table table-striped">
+    <thead>
+        <tr>
+        <th> Номер потягу</th>
+        <th> Звідки</th>
+        <th> Куди</th>
+        <th> Час в дорозі</th>
+        <th> &nbsp;</th>
+        <th> &nbsp;</th>
+        </tr>
+    </thead>
     <tbody>
         {% for object in objects_list %}
         <tr>
-                <td>
-                {{object.name}}
-                </td>
+            <td>{{object.name}}</td>
+            <td>{{object.from_city}}</td>
+            <td>{{object.to_city}}</td>
+            <td>{{object.travel_time}}</td>
+            <td></td>
+            <td></td>
             <td> {% if user.is_authenticated %}
-                <a href='{% url "cities:update" pk=object.pk%}'>
+                <a href='{% url "trains:update" pk=object.pk%}'>
                     <button type="button" class="btn btn-primary btn-sm">Редагувати</button>
                 </a>
                 {% endif %}
 
             </td>
             <td> {% if user.is_authenticated %}
-                <a href='{% url "cities:delete" pk=object.pk%}'>
+                <a href='{% url "trains:delete" pk=object.pk%}'>
                     <button type="button" class="btn btn-danger btn-sm">Видалити</button>
                 </a>
                 {% endif %}
@@ -37,18 +50,18 @@
          <div class="col-md-8 ml-auto">
              <nav aria-label="Page navigation example">
                  <ul class="pagination ">
-                     {% if objects_list.has_previous %}
+                     {% if page_obj.has_previous %}
                         <li class="page-item">
                             <a class="page-link"
-                                href="?page={{ objects_list.previous_page_number }}"
+                                href="?page={{ page_obj.previous_page_number }}"
                                     aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
+                            <span class="sr-only">Наступна</span>
                             </a>
                         </li>
                      {% endif %}
-                     {% for page in objects_list.paginator.page_range %}
-                        {% if page == objects_list.number %}
+                     {% for page in page_obj.paginator.page_range %}
+                        {% if page == page_obj.number %}
                             <li class="page-item active">
                                 <a class="page-link" href="#"> {{page}}
                                     <span class="sr-only">(current)</span>
@@ -63,13 +76,13 @@
                             </li>
                         {% endif %}
                      {% endfor %}
-                     {% if objects_list.has_next %}
+                     {% if page_obj.has_next %}
                         <li class="page-item">
                             <a class="page-link"
-                                href="?page={{objects_list.paginator.num_pages }}"
+                                href="?page={{page_obj.paginator.num_pages }}"
                                     aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
+                                <span class="sr-only">Наступна</span>
                             </a>
                         </li>
                      {% endif %}
@@ -80,9 +93,9 @@
  </div>
 <div class="row">
     <div class='col-md-6 ml-auto'>
-        <a href='{% url "cities:add" %}'>
+        <a href='{% url "trains:add" %}'>
         {% if user.is_authenticated %}
-            <button type="button" class="btn btn-info btn-sm"> Добавити нове місто </button>
+            <button type="button" class="btn btn-info btn-sm"> Добавити новий потяг </button>
         </a>
         {% endif %}
     </div>

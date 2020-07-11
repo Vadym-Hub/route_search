@@ -1,21 +1,19 @@
-from django.shortcuts import render
-from django.core.paginator import Paginator
+from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
 from .models import Train
 from .forms import TrainForm
 
 
-def home(request):
-    trains = Train.objects.all()
-    paginator = Paginator(trains, 10)
-    page = request.GET.get('page')
-    trains = paginator.get_page(page)
-    return render(request, 'trains/home.html', {'objects_list': trains})
+class TrainListView(ListView):
+    """Список потягів"""
+    queryset = Train.objects.all()
+    context_object_name = 'objects_list'
+    template_name = 'trains/list.html'
+    paginate_by = 5
 
 
 class TrainCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
@@ -24,7 +22,7 @@ class TrainCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Train
     form_class = TrainForm
     template_name = 'trains/create.html'
-    success_url = reverse_lazy('trains:home')
+    success_url = reverse_lazy('trains:list')
     success_message = 'Потяг створено!'
 
 
@@ -40,16 +38,14 @@ class TrainUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = Train
     form_class = TrainForm
     template_name = 'trains/update.html'
-    success_url = reverse_lazy('trains:home')
+    success_url = reverse_lazy('trains:list')
     success_message = 'Потяг відредаговано!'
 
 
-class TrainDeleteView(LoginRequiredMixin, DeleteView):
+class TrainDeleteView(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
     """Видалення потягу"""
-    login_url = '/accounts/login/'
     model = Train
-    success_url = reverse_lazy('trains:home')
-
-    def get(self, request, *args, **kwargs):
-        messages.success(request, 'Потяг видалено!')
-        return self.post(request, *args, **kwargs)
+    template_name = 'trains/delete.html'
+    success_url = reverse_lazy('trains:list')
+    success_message = 'Потяг видалено!'
+    login_url = '/accounts/login/'
