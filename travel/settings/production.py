@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import dj_database_url
+
 DB_NAME = os.environ.get('DB_NAME')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DB_HOST = os.environ.get('DB_HOST')
@@ -25,12 +27,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'i%wnnqfj-d)wd_=%!dn+!=6xaz1+8v&tiyphk^7xu#ewhh=q2g'
-
+# SECRET_KEY = 'i%wnnqfj-d)wd_=%!dn+!=6xaz1+8v&tiyphk^7xu#ewhh=q2g'
+SECRET_KEY = SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['travel.herokuapp.com']
+ALLOWED_HOSTS = ['travel-service.herokuapp.com']
 
 
 # Application definition
@@ -93,7 +95,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-import dj_database_url
+
 db = dj_database_url.config()
 DATABASES['default'].update(db)
 
@@ -135,4 +137,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
