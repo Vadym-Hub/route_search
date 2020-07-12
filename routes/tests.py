@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-from routes import views as routes_views
+from . import views as routes_views
 from cities import views as cities_views
 from .forms import RouteForm
 

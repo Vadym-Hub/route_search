@@ -6,8 +6,8 @@ from django.views.generic import DetailView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
-from routes.forms import RouteForm, RouteModelForm
-from routes.models import Route
+from .forms import RouteForm, RouteModelForm
+from .models import Route
 from trains.models import Train
 import time as tm
 

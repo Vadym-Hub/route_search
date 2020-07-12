@@ -1,6 +1,6 @@
 from django.urls import path
 
-from routes.views import HomeView, RouteDetailView, RouteListView, add_route, find_routes, RouteDeleteView
+from .views import HomeView, RouteDetailView, RouteListView, add_route, find_routes, RouteDeleteView
 
 apps_name = 'routes'
 

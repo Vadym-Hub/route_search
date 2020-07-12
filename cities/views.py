@@ -4,8 +4,8 @@ from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from cities.models import City
-from cities.forms import CityForm
+from .models import City
+from .forms import CityForm
 
 
 class CityListView(ListView):

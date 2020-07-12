@@ -1,6 +1,6 @@
 from django import forms
 from cities.models import City
-from routes.models import Route
+from .models import Route
 
 
 class RouteForm(forms.Form):
