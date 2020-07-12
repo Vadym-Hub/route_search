@@ -98,7 +98,7 @@ def find_routes(request):
             if not trains:
                 # якщо список пустий, то нема ніяких маршрутів,
                 # які б задовільнили задані умови
-                messages.error(request, 'Час в дорозі, більше заданного.')
+                messages.error(request, 'По заданим критеріям потяг відсутній.')
                 return render(request, 'routes/home.html', {'form': form})
             routes = []
             cities = {'from_city': from_city.name, 'to_city': to_city.name}
@@ -170,9 +170,8 @@ def add_route(request):
             context = {}
             route_desc = []
             for tr in qs:
-                dsc = '''Потяг №{} направляющийся з {} в {}.
-            Час в дорозі {}.'''.format(tr.name, tr.from_city, tr.to_city,
-                                       tr.travel_time)
+                dsc = f'''Потяг №{tr.name} направляющийся з {tr.from_city} в {tr.to_city}.
+            Час в дорозі {tr.travel_time}.'''
                 route_desc.append(dsc)
             context = {'form': form, 'descr': route_desc,
                        'from_city': from_city,
